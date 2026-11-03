@@ -41,7 +41,17 @@ export const AppContent: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#080B11] flex items-center justify-center px-4 overflow-hidden">
         <div className="text-center space-y-4 max-w-5xl w-full">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#F7A81B] to-[#D41B2C] mx-auto animate-pulse shadow-[0_0_40px_rgba(247,168,27,0.4)]" />
+          <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+            {/* Ambient Radial Aura */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F7A81B] to-[#D41B2C] blur-xl opacity-60 animate-pulse" />
+            <div className="relative w-full h-full rounded-2xl p-2.5 bg-gradient-to-br from-[#F7A81B]/20 via-black/40 to-[#D41B2C]/20 border border-white/15 backdrop-blur-md shadow-[0_0_50px_rgba(247,168,27,0.35)] flex items-center justify-center">
+              <img
+                src="/Club LOGO.png"
+                alt="Rotaract Club of Acropolis Royals Logo"
+                className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(247,168,27,0.5)]"
+              />
+            </div>
+          </div>
           <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-wider sm:tracking-widest uppercase whitespace-nowrap overflow-hidden text-ellipsis">
             <DecryptedText text="ROTARACT CLUB OF ACROPOLIS ROYALS" speed={25} />
           </h1>
