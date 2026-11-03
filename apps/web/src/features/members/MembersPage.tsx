@@ -753,7 +753,12 @@ export const MembersPage: React.FC = () => {
                     className="w-5 h-5 rounded border-white/20 text-[#38BDF8] focus:ring-[#38BDF8]"
                   />
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <img src={getDirectImageUrl(member.photoUrl) || DEFAULT_AVATAR} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                    <img 
+                      src={getDirectImageUrl(member.photoUrl) || DEFAULT_AVATAR} 
+                      alt="" 
+                      onError={e => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }}
+                      className="w-10 h-10 rounded-lg object-cover" 
+                    />
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{member.name}</p>
                       <p className="text-xs text-slate-400 truncate">{member.designation || 'Member'}</p>

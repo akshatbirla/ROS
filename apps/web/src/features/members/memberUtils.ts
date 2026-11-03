@@ -1,4 +1,4 @@
-const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+const DEFAULT_AVATAR = '/default-avatar.png';
 
 /** Convert Google Drive share URL to a direct image URL usable in <img> tags */
 export const getDirectImageUrl = (url: string): string => {
@@ -10,7 +10,7 @@ export const getDirectImageUrl = (url: string): string => {
       return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
   }
-  return cleanUrl.startsWith('http') ? cleanUrl : DEFAULT_AVATAR;
+  return cleanUrl.startsWith('http') || cleanUrl.startsWith('/') ? cleanUrl : DEFAULT_AVATAR;
 };
 
 export { DEFAULT_AVATAR };

@@ -256,7 +256,12 @@ export const databaseService = {
   },
 
   async deleteMember(id: string): Promise<void> {
-    await supabase.from('members').delete().eq('id', id);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      await supabase.from('members').delete().eq('id', id);
+    } else {
+      await supabase.from('members').delete().or(`college_enrollment.eq.${id},rotary_id.eq.${id},email.eq.${id}`);
+    }
   },
 
   // --- Events ---

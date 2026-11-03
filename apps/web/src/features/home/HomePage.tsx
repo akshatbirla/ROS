@@ -38,9 +38,10 @@ export const HomePage: React.FC<HomePageProps> = ({ setActivePage }) => {
 
   const happenedEvents = events.filter(e => e.status === 'happened');
   
-  // Calculate Avg Attendance
+  // Calculate Avg Attendance & Service Metrics
   const totalBeneficiaries = happenedEvents.reduce((acc, curr) => acc + (curr.beneficiaries || 0), 0);
   const totalRotaractors = happenedEvents.reduce((acc, curr) => acc + (curr.nominatedMemberIds?.length || 0), 0);
+  const totalServiceHours = happenedEvents.reduce((acc, curr) => acc + ((curr.actualDurationHours || 2) * (curr.nominatedMemberIds?.length || 8)), 0);
   const totalAttendees = totalBeneficiaries + totalRotaractors;
   const avgAttendance = happenedEvents.length > 0 ? Math.round(totalAttendees / happenedEvents.length) : 0;
 
@@ -136,8 +137,8 @@ export const HomePage: React.FC<HomePageProps> = ({ setActivePage }) => {
       <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
           { label: "Projects", val: happenedEvents.length, icon: Award, color: "text-[#F7A81B]", action: () => setActivePage('dashboard') },
-          { label: "Beneficiaries", val: totalBeneficiaries || 1250, icon: HeartHandshake, color: "text-[#D41B2C]", action: () => setActivePage('dashboard') },
-          { label: "Serving Hours", val: "5000+", icon: Clock, color: "text-amber-400", action: () => setActivePage('dashboard') },
+          { label: "Beneficiaries", val: totalBeneficiaries, icon: HeartHandshake, color: "text-[#D41B2C]", action: () => setActivePage('dashboard') },
+          { label: "Serving Hours", val: totalServiceHours > 0 ? `${totalServiceHours}+` : '0', icon: Clock, color: "text-amber-400", action: () => setActivePage('dashboard') },
           { label: "Years of Service", val: "6+", icon: Shield, color: "text-emerald-400", action: () => setActivePage('dashboard') },
         ].map((m, idx) => {
           const Icon = m.icon;

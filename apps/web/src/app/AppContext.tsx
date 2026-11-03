@@ -216,27 +216,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // 6. Members
       const membersData = await databaseService.fetchMembers();
-      if (membersData.length > 0) {
-        const mappedMembers: CandidateMember[] = membersData.map(m => ({
-          id: m.id,
-          name: m.full_name,
-          contactNo: m.contact_no || '',
-          email: m.email || '',
-          dob: '',
-          photoUrl: m.avatar_url || '',
-          course: '',
-          currentYear: '',
-          section: '',
-          enrollmentNo: m.college_enrollment || m.rotary_id || '',
-          domainsInterest: m.avenue,
-          riMembershipId: m.rotary_id || '',
-          designation: m.role,
-          disciplineScore: m.discipline_score,
-          status: m.status === 'active' ? 'Active' : 'Inactive'
-        }));
-        setActiveMembers(mappedMembers);
-        setAddedMemberKeys(new Set(mappedMembers.map(m => m.enrollmentNo || m.email || m.id)));
-      }
+      const mappedMembers: CandidateMember[] = membersData.map(m => ({
+        id: m.id,
+        name: m.full_name,
+        contactNo: m.contact_no || '',
+        email: m.email || '',
+        dob: '',
+        photoUrl: m.avatar_url || '',
+        course: '',
+        currentYear: '',
+        section: '',
+        enrollmentNo: m.college_enrollment || m.rotary_id || '',
+        domainsInterest: m.avenue,
+        riMembershipId: m.rotary_id || '',
+        designation: m.role,
+        disciplineScore: m.discipline_score,
+        status: m.status === 'active' ? 'Active' : 'Inactive'
+      }));
+      setActiveMembers(mappedMembers);
+      setAddedMemberKeys(new Set(mappedMembers.map(m => m.enrollmentNo || m.email || m.id)));
 
       // 7. Events
       const eventsData = await databaseService.fetchEvents();
@@ -377,18 +375,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const memberToRemove = activeMembers.find(m => m.id === memberId);
     if (!memberToRemove) return;
 
-    await databaseService.deleteMember(memberId);
-
-    // Auto-log Refund
-    await databaseService.addTransaction({
-      type: 'expense',
-      amount: 1200,
-      category: 'Dues Adjustment',
-      description: `Membership Departure Adjustment – ${memberToRemove.name}`,
-      date: new Date().toISOString().split('T')[0],
-      verified_by: 'System Auto-Adjustment',
-      payment_mode: 'Online/UPI'
+    // Optimistically update local state immediately so UI updates instantaneously
+    setActiveMembers(prev => prev.filter(m => m.id !== memberId));
+    setAddedMemberKeys(prev => {
+      const next = new Set(prev);
+      next.delete(memberToRemove.enrollmentNo || memberToRemove.email || memberToRemove.id);
+      return next;
     });
+
+    try {
+      await databaseService.deleteMember(memberId);
+
+      // Auto-log Refund in Ledger
+      await databaseService.addTransaction({
+        type: 'expense',
+        amount: 1200,
+        category: 'Dues Adjustment',
+        description: `Membership Departure Adjustment – ${memberToRemove.name}`,
+        date: new Date().toISOString().split('T')[0],
+        verified_by: 'System Auto-Adjustment',
+        payment_mode: 'Online/UPI'
+      });
+    } catch (err) {
+      console.warn("Could not delete member remotely (might be local candidate or non-UUID id):", err);
+    }
 
     loadDatabaseData();
   };

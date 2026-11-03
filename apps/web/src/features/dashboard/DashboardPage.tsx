@@ -76,7 +76,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           {[
             {
               title: "Community Beneficiaries",
-              value: `${Math.max(totalBeneficiaries, 4200)}+`,
+              value: totalBeneficiaries > 0 ? `${totalBeneficiaries}+` : '0',
               sub: "Direct lives impacted across city outreach & drives",
               icon: HeartHandshake,
               glowColor: "rgba(52, 211, 153, 0.25)",
@@ -87,7 +87,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             },
             {
               title: "Service Projects Completed",
-              value: `${Math.max(happenedEvents.length, 38)} Projects`,
+              value: `${happenedEvents.length} Projects`,
               sub: "Documented initiatives across all 5 Rotary Avenues",
               icon: Award,
               glowColor: "rgba(247, 168, 27, 0.25)",
@@ -98,7 +98,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             },
             {
               title: "Volunteer Service Hours",
-              value: `${Math.max(totalServiceHours, 1850)}+ Hrs`,
+              value: totalServiceHours > 0 ? `${totalServiceHours}+ Hrs` : '0 Hrs',
               sub: "On-ground selfless community leadership",
               icon: Clock,
               glowColor: "rgba(212, 27, 44, 0.25)",
@@ -467,7 +467,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* KPI Status Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { title: "Total Active Roster", value: `${Math.max(activeMembers.length, 74)} Royals`, sub: "100% Verified in DB", icon: Users, color: "from-[#F7A81B]/20 to-transparent", border: "border-[#F7A81B]/30", page: 'members' as PageId },
+          { title: "Total Active Roster", value: `${activeMembers.length} Royals`, sub: "100% Verified in DB", icon: Users, color: "from-[#F7A81B]/20 to-transparent", border: "border-[#F7A81B]/30", page: 'members' as PageId },
           { title: "Monthly Attendance", value: "94.2%", sub: "Institutional metric", icon: Activity, color: "from-emerald-500/20 to-transparent", border: "border-emerald-500/30", page: 'analytics' as PageId },
           { title: "Quarterly Treasury", value: "₹48,500", sub: "Audited ledger balance", icon: DollarSign, color: "from-amber-500/20 to-transparent", border: "border-amber-500/30", page: 'finance' as PageId },
           { title: "Pending Tasks", value: "3 Actions", sub: "Awaiting presidential seal", icon: AlertCircle, color: "from-[#D41B2C]/20 to-transparent", border: "border-[#D41B2C]/30", page: 'event_proposal' as PageId },
