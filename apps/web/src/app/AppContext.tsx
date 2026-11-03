@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CandidateMember, parseGoogleSheetCsv } from '../features/members/memberUtils';
 import { supabase } from '../lib/supabaseClient';
+import { databaseService } from '../services/databaseService';
 
 export interface ExpenseItem {
   name: string;
@@ -150,199 +151,177 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80"
     ],
-    flagshipProjects: [
-      { 
-        id: "paws", title: "Paws and Claws", desc: "Animal welfare initiative focused on feeding, vaccinating, and sheltering stray dogs and cats.", 
-        about: "Paws and Claws is our dedicated animal welfare initiative. We organize regular feeding drives, coordinate with local vets for vaccination camps, and find loving homes for strays.",
-        img: "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=600&q=80", 
-        color: "from-amber-500/80", gallery: ["https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=800&q=80"] 
-      },
-      { 
-        id: "readers", title: "Reader's Round Table", desc: "A literary fellowship fostering book discussions, intellectual exchange, and reading activities.", 
-        about: "Reader's Round Table brings together bibliophiles to share insights, debate ideas, and promote the love of reading in our community.",
-        img: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80", 
-        color: "from-sky-500/80", gallery: ["https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80"] 
-      },
-      { 
-        id: "nayi", title: "Nayi Disha", desc: "A widespread awareness campaign against drug abuse, promoting healthy and active lifestyles.", 
-        about: "Nayi Disha aims to guide the youth away from substance abuse through workshops, expert talks, and community outreach programs.",
-        img: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=600&q=80", 
-        color: "from-emerald-500/80", gallery: ["https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=800&q=80"] 
-      },
-      { 
-        id: "pathshala", title: "Pathshala", desc: "Educational outreach program teaching underprivileged children in government schools and slums.", 
-        about: "Pathshala is our commitment to education equity. Volunteers spend their weekends teaching fundamental subjects to children who lack access to quality education.",
-        img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80", 
-        color: "from-[#F7A81B]/80", gallery: ["https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"] 
-      }
-    ],
-    photoGallery: [
-      { id: "1", img: "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=600&q=80", eventName: "Paws and Claws Feeding Drive" },
-      { id: "2", img: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80", eventName: "Reader's Round Table" },
-      { id: "3", img: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=600&q=80", eventName: "Nayi Disha Campaign" },
-      { id: "4", img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80", eventName: "Pathshala Education Outreach" },
-      { id: "5", img: "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&w=600&q=80", eventName: "Blood Donation Camp" },
-      { id: "6", img: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=600&q=80", eventName: "Tree Plantation Drive" }
-    ],
-    galleryDriveLink: "https://drive.google.com/drive/folders/1xyz",
-    featuredAlbums: [
-      { 
-        id: 'a1', 
-        title: 'District Conference 2026', 
-        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
-        description: 'Annual District 3040 Conference gathering over 800+ passionate Rotaractors, district governors, and international delegates for three days of keynotes, awards, and fellowship.',
-        photos: [
-          'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
-          'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80',
-          'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80'
-        ]
-      },
-      { 
-        id: 'a2', 
-        title: 'Installation Ceremony', 
-        image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=1200&q=80',
-        description: 'The formal presidential collar exchange and board pinning banquet marking the inauguration of the Rotary Year 2026-27.',
-        photos: [
-          'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=800&q=80',
-          'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=800&q=80'
-        ]
-      },
-      { 
-        id: 'a3', 
-        title: 'RYLA Weekend Retreat', 
-        image: 'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?auto=format&fit=crop&w=1200&q=80',
-        description: 'Rotaract Youth Leadership Awards off-site retreat focusing on team dynamics, survival challenges, and ethical problem solving.',
-        photos: [
-          'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?auto=format&fit=crop&w=800&q=80',
-          'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80'
-        ]
-      },
-      { 
-        id: 'a4', 
-        title: 'Community Outreach', 
-        image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=1200&q=80',
-        description: 'City-wide multi-avenue community drive distributing education kits, warm clothes, and organizing health checks.',
-        photos: [
-          'https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=800&q=80',
-          'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80'
-        ]
-      }
-    ],
-    presidentImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    flagshipProjects: [],
+    photoGallery: [],
+    featuredAlbums: [],
     boardOfDirectors: []
   });
-  
+
   const [events, setEvents] = useState<RotaractEvent[]>([]);
   const [eventReports, setEventReports] = useState<EventReport[]>([]);
   const [monthlyReports, setMonthlyReports] = useState<MonthlyReport[]>([]);
 
-  // Load all initial data from Supabase
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        // 1. Settings
-        const { data: settingsData } = await supabase.from('app_settings').select('*').single();
-        if (settingsData) {
-          let currentBod = settingsData.board_of_directors || [];
-          if (currentBod.length === 0) {
-            currentBod = [
-              { id: 'bod-1', name: 'Update in Settings', role: 'Club Faculty Advisor', image: '', avenue: '' },
-              { id: 'bod-2', name: 'Update in Settings', role: 'President', image: '', avenue: 'Executive Board' },
-              { id: 'bod-3', name: 'Update in Settings', role: 'Secretary', image: '', avenue: 'Executive Board' }
-            ];
-            // Auto-save the defaults so they are editable
-            await supabase.from('app_settings').update({ board_of_directors: currentBod }).eq('id', 1);
-          }
+  // Function to load all production data from Supabase tables
+  const loadDatabaseData = async () => {
+    try {
+      // 1. Settings
+      const settingsData = await databaseService.fetchSettings();
+      // 2. BOD
+      const bodData = await databaseService.fetchBoard();
+      // 3. Flagship Projects
+      const flagshipData = await databaseService.fetchFlagshipProjects();
+      // 4. Photo Gallery
+      const galleryData = await databaseService.fetchGallery();
+      // 5. Featured Albums
+      const albumsData = await databaseService.fetchFeaturedAlbums();
 
-          setAppSettings({
-            showBoardOfDirectors: settingsData.show_board_of_directors,
-            welcomeText: settingsData.welcome_text,
-            heroBannerUrl: settingsData.hero_banner_url,
-            boardOfDirectors: currentBod
-          });
-        }
+      setAppSettings(prev => ({
+        ...prev,
+        welcomeText: settingsData?.welcome_text || prev.welcomeText,
+        heroBannerUrl: settingsData?.hero_banner_url || prev.heroBannerUrl,
+        presidentImage: settingsData?.president_image || prev.presidentImage,
+        whoWeAreText: settingsData?.who_we_are_text || prev.whoWeAreText,
+        whoWeAreImages: settingsData?.who_we_are_images || prev.whoWeAreImages,
+        galleryDriveLink: settingsData?.gallery_drive_link || prev.galleryDriveLink,
+        showBoardOfDirectors: settingsData?.show_board_of_directors ?? prev.showBoardOfDirectors,
+        boardOfDirectors: bodData.length > 0 ? bodData.map(b => ({
+          id: b.id,
+          name: b.name,
+          role: b.role,
+          avenue: b.avenue,
+          image: b.image || ''
+        })) : prev.boardOfDirectors,
+        flagshipProjects: flagshipData.length > 0 ? flagshipData.map(f => ({
+          id: f.id,
+          title: f.title,
+          desc: f.short_desc,
+          about: f.about_story,
+          img: f.cover_image,
+          color: f.accent_color || 'from-amber-500/80',
+          gallery: f.gallery || []
+        })) : prev.flagshipProjects,
+        photoGallery: galleryData.length > 0 ? galleryData.map(g => ({
+          id: g.id,
+          img: g.image_url,
+          eventName: g.event_name
+        })) : prev.photoGallery,
+        featuredAlbums: albumsData.length > 0 ? albumsData.map(a => ({
+          id: a.id,
+          title: a.title,
+          image: a.cover_image,
+          description: a.description || '',
+          photos: a.photos || []
+        })) : prev.featuredAlbums
+      }));
 
-        // 2. Active Members
-        const { data: membersData } = await supabase.from('active_members').select('*');
-        if (membersData) {
-          const mappedMembers = membersData.map(m => ({
-            id: m.id,
-            name: m.name,
-            contactNo: m.contact_no,
-            email: m.email,
-            dob: m.dob,
-            photoUrl: m.photo_url,
-            course: m.course,
-            currentYear: m.current_year,
-            section: m.section,
-            enrollmentNo: m.enrollment_no,
-            domainsInterest: m.domains_interest,
-            riMembershipId: m.ri_membership_id,
-            designation: m.designation,
-            bio: m.bio,
-            disciplineScore: m.discipline_score,
-            status: m.status
-          }));
-          setActiveMembers(mappedMembers);
-          setAddedMemberKeys(new Set(mappedMembers.map(m => m.enrollmentNo || m.email || m.id)));
-        }
-
-        // 3. Transactions
-        const { data: txData } = await supabase.from('transactions').select('*').order('date', { ascending: false });
-        if (txData) {
-          setTransactions(txData.map(t => ({
-            id: t.id,
-            date: t.date,
-            description: t.description,
-            category: t.category,
-            type: t.type,
-            amount: t.amount,
-            receipt: t.receipt,
-            verifiedBy: t.verified_by
-          })));
-        }
-
-        // 4. Events
-        const { data: eventsData } = await supabase.from('events').select('*');
-        if (eventsData) {
-          setEvents(eventsData.map(e => ({
-            id: e.id,
-            name: e.name,
-            avenue: e.avenue,
-            date: e.date,
-            startTime: e.start_time,
-            endTime: e.end_time,
-            venue: e.venue,
-            about: e.about,
-            status: e.status,
-            actualDate: e.actual_date,
-            actualTime: e.actual_time,
-            actualDurationHours: e.actual_duration_hours,
-            beneficiaries: e.beneficiaries,
-            nominatedMemberIds: e.nominated_member_ids || [],
-            posterUrl: e.poster_url,
-            formLink: e.form_link,
-            publicStatus: e.public_status,
-            isPublic: e.is_public || false,
-            likes: e.likes || 0,
-            shares: e.shares || 0
-          })));
-        }
-
-        // 5. Reports
-        const { data: evtReports } = await supabase.from('event_reports').select('*');
-        if (evtReports) setEventReports(evtReports.map(r => ({ eventId: r.event_id, pdfDataUrl: r.pdf_data_url, uploadedAt: r.uploaded_at })));
-
-        const { data: mthReports } = await supabase.from('monthly_reports').select('*');
-        if (mthReports) setMonthlyReports(mthReports.map(r => ({ monthKey: r.month_key, pdfDataUrl: r.pdf_data_url, uploadedAt: r.uploaded_at })));
-
-      } catch (err) {
-        console.error("Error loading data from Supabase:", err);
+      // 6. Members
+      const membersData = await databaseService.fetchMembers();
+      if (membersData.length > 0) {
+        const mappedMembers: CandidateMember[] = membersData.map(m => ({
+          id: m.id,
+          name: m.full_name,
+          contactNo: m.contact_no || '',
+          email: m.email || '',
+          dob: '',
+          photoUrl: m.avatar_url || '',
+          course: '',
+          currentYear: '',
+          section: '',
+          enrollmentNo: m.college_enrollment || m.rotary_id || '',
+          domainsInterest: m.avenue,
+          riMembershipId: m.rotary_id || '',
+          designation: m.role,
+          disciplineScore: m.discipline_score,
+          status: m.status === 'active' ? 'Active' : 'Inactive'
+        }));
+        setActiveMembers(mappedMembers);
+        setAddedMemberKeys(new Set(mappedMembers.map(m => m.enrollmentNo || m.email || m.id)));
       }
-    };
 
-    fetchAllData();
+      // 7. Events
+      const eventsData = await databaseService.fetchEvents();
+      if (eventsData.length > 0) {
+        setEvents(eventsData.map(e => ({
+          id: e.id,
+          name: e.title,
+          avenue: e.avenue,
+          date: e.start_date,
+          startTime: e.start_time || '10:00 AM',
+          endTime: '01:00 PM',
+          venue: e.venue,
+          about: e.description || '',
+          status: e.status === 'happened' ? 'happened' : e.status === 'Approved' ? 'approved' : 'pending_approval',
+          actualDate: e.start_date,
+          actualTime: e.start_time || '10:00 AM',
+          actualDurationHours: Number(e.actual_duration_hours || 2),
+          beneficiaries: Number(e.beneficiaries || 0),
+          nominatedMemberIds: (e.nominated_member_ids as any) || [],
+          posterUrl: e.cover_image || '',
+          formLink: '',
+          publicStatus: e.status === 'happened' ? 'Completed' : 'Upcoming',
+          isPublic: true,
+          likes: 0,
+          shares: 0
+        })));
+      }
+
+      // 8. Transactions
+      const txData = await databaseService.fetchTransactions();
+      if (txData.length > 0) {
+        setTransactions(txData.map(t => ({
+          id: t.id,
+          date: t.date,
+          description: t.description,
+          category: t.category,
+          type: t.type,
+          amount: Number(t.amount),
+          receipt: t.receipt_url || `RCP-${t.id.slice(0, 4)}`,
+          verifiedBy: t.verified_by
+        })));
+      }
+    } catch (err) {
+      console.error("Error loading data from Supabase:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadDatabaseData();
     fetchLiveGoogleSheet();
+
+    // --------------------------------------------------------------------------
+    // Supabase Real-Time Subscriptions for instantaneous sync across all tabs
+    // --------------------------------------------------------------------------
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'club_settings' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'board_of_directors' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'flagship_projects' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'photo_gallery' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'featured_albums' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, () => {
+        loadDatabaseData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'financial_transactions' }, () => {
+        loadDatabaseData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchLiveGoogleSheet = async () => {
@@ -365,85 +344,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const addMember = async (candidate: CandidateMember) => {
     const key = candidate.enrollmentNo || candidate.email || candidate.id;
-    const newMember: CandidateMember = {
-      ...candidate,
-      disciplineScore: 100,
-      status: 'Active',
-    };
     
     // Save to Supabase
-    await supabase.from('active_members').insert({
-      id: newMember.id,
-      name: newMember.name,
-      contact_no: newMember.contactNo,
-      email: newMember.email,
-      dob: newMember.dob,
-      photo_url: newMember.photoUrl,
-      course: newMember.course,
-      current_year: newMember.currentYear,
-      section: newMember.section,
-      enrollment_no: newMember.enrollmentNo,
-      domains_interest: newMember.domainsInterest,
-      ri_membership_id: newMember.riMembershipId,
-      designation: newMember.designation,
-      bio: newMember.bio,
-      discipline_score: newMember.disciplineScore,
-      status: newMember.status
+    await databaseService.addMember({
+      full_name: candidate.name,
+      contact_no: candidate.contactNo,
+      email: candidate.email,
+      college_enrollment: candidate.enrollmentNo,
+      avenue: candidate.domainsInterest || 'Club Service',
+      role: candidate.designation || 'Member',
+      status: 'active',
+      discipline_score: 100,
+      dues_settled: true,
+      avatar_url: candidate.photoUrl
     });
 
-    setActiveMembers(prev => {
-      if (prev.some(m => (m.enrollmentNo && m.enrollmentNo === candidate.enrollmentNo) || m.id === candidate.id)) return prev;
-      return [newMember, ...prev];
-    });
-    setAddedMemberKeys(prev => new Set(prev).add(key));
-
-    // Auto-log Fee
-    const newTx: Transaction = {
-      id: `T-DUE-${Date.now()}`,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      description: `Membership Fee – ${candidate.name} (${candidate.enrollmentNo})`,
-      category: 'Dues',
+    // Auto-log Fee Transaction
+    await databaseService.addTransaction({
       type: 'income',
       amount: 1200,
-      receipt: `RCP-${Math.floor(1000 + Math.random() * 9000)}`,
-      verifiedBy: 'System Auto-Onboard',
-    };
-    
-    await supabase.from('transactions').insert({
-      id: newTx.id, date: newTx.date, description: newTx.description, category: newTx.category, type: newTx.type, amount: newTx.amount, receipt: newTx.receipt, verified_by: newTx.verifiedBy
+      category: 'Dues',
+      description: `Membership Fee – ${candidate.name} (${candidate.enrollmentNo})`,
+      date: new Date().toISOString().split('T')[0],
+      verified_by: 'System Auto-Onboard',
+      payment_mode: 'Online/UPI'
     });
-    setTransactions(prev => [newTx, ...prev]);
+
+    loadDatabaseData();
   };
 
   const removeMember = async (memberId: string) => {
     const memberToRemove = activeMembers.find(m => m.id === memberId);
     if (!memberToRemove) return;
 
-    await supabase.from('active_members').delete().eq('id', memberId);
-
-    setActiveMembers(prev => prev.filter(m => m.id !== memberId));
-    setAddedMemberKeys(prev => {
-      const next = new Set(prev);
-      next.delete(memberToRemove.enrollmentNo || memberToRemove.email || memberToRemove.id);
-      return next;
-    });
+    await databaseService.deleteMember(memberId);
 
     // Auto-log Refund
-    const refundTx: Transaction = {
-      id: `T-ADJ-${Date.now()}`,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      description: `Membership Departure Adjustment – ${memberToRemove.name}`,
-      category: 'Dues Adjustment',
+    await databaseService.addTransaction({
       type: 'expense',
       amount: 1200,
-      receipt: `ADJ-${Math.floor(1000 + Math.random() * 9000)}`,
-      verifiedBy: 'System Auto-Adjustment',
-    };
-
-    await supabase.from('transactions').insert({
-      id: refundTx.id, date: refundTx.date, description: refundTx.description, category: refundTx.category, type: refundTx.type, amount: refundTx.amount, receipt: refundTx.receipt, verified_by: refundTx.verifiedBy
+      category: 'Dues Adjustment',
+      description: `Membership Departure Adjustment – ${memberToRemove.name}`,
+      date: new Date().toISOString().split('T')[0],
+      verified_by: 'System Auto-Adjustment',
+      payment_mode: 'Online/UPI'
     });
-    setTransactions(prev => [refundTx, ...prev]);
+
+    loadDatabaseData();
   };
 
   const deleteCandidate = (candidateId: string) => {
@@ -451,75 +398,124 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addTransaction = async (tx: Omit<Transaction, 'id' | 'receipt' | 'verifiedBy'> & { verifiedBy?: string }) => {
-    const newTx: Transaction = {
-      ...tx,
-      id: `T-${Date.now()}`,
-      receipt: `RCP-${Math.floor(1000 + Math.random() * 9000)}`,
-      verifiedBy: tx.verifiedBy || 'Treasury Admin',
-    };
-    
-    await supabase.from('transactions').insert({
-      id: newTx.id, date: newTx.date, description: newTx.description, category: newTx.category, type: newTx.type, amount: newTx.amount, receipt: newTx.receipt, verified_by: newTx.verifiedBy
+    await databaseService.addTransaction({
+      type: tx.type,
+      amount: tx.amount,
+      category: tx.category,
+      description: tx.description,
+      date: tx.date || new Date().toISOString().split('T')[0],
+      verified_by: tx.verifiedBy || 'Treasury Admin',
+      payment_mode: 'Online/UPI'
     });
-    setTransactions(prev => [newTx, ...prev]);
+    loadDatabaseData();
   };
 
   const deleteTransaction = async (txId: string) => {
-    await supabase.from('transactions').delete().eq('id', txId);
-    setTransactions(prev => prev.filter(t => t.id !== txId));
+    await databaseService.deleteTransaction(txId);
+    loadDatabaseData();
   };
 
   const updateSettings = async (updates: Partial<AppSettings>) => {
     const newSettings = { ...appSettings, ...updates };
-    
-    await supabase.from('app_settings').update({
-      show_board_of_directors: newSettings.showBoardOfDirectors,
+    setAppSettings(newSettings);
+
+    // 1. Update Core Settings
+    await databaseService.updateSettings({
       welcome_text: newSettings.welcomeText,
       hero_banner_url: newSettings.heroBannerUrl,
-      board_of_directors: newSettings.boardOfDirectors
-    }).eq('id', 1);
+      president_image: newSettings.presidentImage,
+      who_we_are_text: newSettings.whoWeAreText,
+      who_we_are_images: newSettings.whoWeAreImages,
+      gallery_drive_link: newSettings.galleryDriveLink,
+      show_board_of_directors: newSettings.showBoardOfDirectors
+    });
 
-    setAppSettings(newSettings);
+    // 2. Sync BOD if updated
+    if (updates.boardOfDirectors) {
+      await databaseService.syncBoard(updates.boardOfDirectors.map((b, idx) => ({
+        id: b.id,
+        name: b.name,
+        role: b.role,
+        avenue: b.avenue || 'Executive Board',
+        image: b.image,
+        display_order: idx + 1
+      })));
+    }
+
+    // 3. Sync Flagship Projects if updated
+    if (updates.flagshipProjects) {
+      for (let i = 0; i < updates.flagshipProjects.length; i++) {
+        const fp = updates.flagshipProjects[i];
+        await databaseService.updateFlagshipProject({
+          id: fp.id,
+          title: fp.title,
+          short_desc: fp.desc,
+          about_story: fp.about,
+          cover_image: fp.img,
+          accent_color: fp.color,
+          gallery: fp.gallery,
+          display_order: i + 1
+        });
+      }
+    }
+
+    // 4. Sync Featured Albums if updated
+    if (updates.featuredAlbums) {
+      for (let i = 0; i < updates.featuredAlbums.length; i++) {
+        const alb = updates.featuredAlbums[i];
+        await databaseService.updateFeaturedAlbum({
+          id: alb.id,
+          title: alb.title,
+          cover_image: alb.image,
+          description: alb.description,
+          photos: alb.photos || [],
+          display_order: i + 1
+        });
+      }
+    }
   };
 
   const addEvent = async (event: Omit<RotaractEvent, 'id' | 'status' | 'nominatedMemberIds'>) => {
-    const newEvent: RotaractEvent = {
-      ...event,
-      id: `EVT-${Date.now()}`,
-      status: 'pending_approval',
-      nominatedMemberIds: [],
-    };
-
-    // Try inserting into Supabase, ignoring new columns if they don't exist yet
-    try {
-      await supabase.from('events').insert({
-        id: newEvent.id, name: newEvent.name, avenue: newEvent.avenue, date: newEvent.date, start_time: newEvent.startTime, end_time: newEvent.endTime, venue: newEvent.venue, about: newEvent.about, status: newEvent.status, nominated_member_ids: newEvent.nominatedMemberIds, poster_url: newEvent.posterUrl, form_link: newEvent.formLink, public_status: newEvent.publicStatus, is_public: newEvent.isPublic
-      });
-    } catch (e) {
-      console.warn('Supabase insert failed, likely due to missing columns. Continuing with local state.');
-    }
-    setEvents(prev => [newEvent, ...prev]);
+    await databaseService.addEvent({
+      title: event.name,
+      avenue: event.avenue,
+      start_date: event.date,
+      start_time: event.startTime,
+      venue: event.venue,
+      status: 'In Planning',
+      description: event.about,
+      beneficiaries: 0,
+      actual_duration_hours: 2,
+      allocated_budget: 0,
+      actual_expenditure: 0,
+      cover_image: event.posterUrl
+    });
+    loadDatabaseData();
   };
 
   const updateEvent = async (eventId: string, updates: Partial<RotaractEvent>) => {
     const current = events.find(e => e.id === eventId);
     if (!current) return;
     const newEvent = { ...current, ...updates };
-    
-    try {
-      await supabase.from('events').update({
-        name: newEvent.name, avenue: newEvent.avenue, date: newEvent.date, start_time: newEvent.startTime, end_time: newEvent.endTime, venue: newEvent.venue, about: newEvent.about, status: newEvent.status, actual_date: newEvent.actualDate, actual_time: newEvent.actualTime, actual_duration_hours: newEvent.actualDurationHours, beneficiaries: newEvent.beneficiaries, nominated_member_ids: newEvent.nominatedMemberIds, poster_url: newEvent.posterUrl, form_link: newEvent.formLink, public_status: newEvent.publicStatus, is_public: newEvent.isPublic
-      }).eq('id', eventId);
-    } catch (e) {
-      console.warn('Supabase update failed. Continuing with local state.');
-    }
-    
-    setEvents(prev => prev.map(e => e.id === eventId ? newEvent : e));
+
+    await databaseService.updateEvent(eventId, {
+      title: newEvent.name,
+      avenue: newEvent.avenue,
+      start_date: newEvent.date,
+      start_time: newEvent.startTime,
+      venue: newEvent.venue,
+      status: newEvent.status === 'happened' ? 'happened' : newEvent.status === 'approved' ? 'Approved' : 'In Planning',
+      description: newEvent.about,
+      beneficiaries: newEvent.beneficiaries,
+      actual_duration_hours: newEvent.actualDurationHours,
+      cover_image: newEvent.posterUrl
+    });
+    loadDatabaseData();
   };
 
   const deleteEvent = async (eventId: string) => {
-    await supabase.from('events').delete().eq('id', eventId);
-    setEvents(prev => prev.filter(e => e.id !== eventId));
+    await databaseService.deleteEvent(eventId);
+    loadDatabaseData();
   };
 
   const uploadEventReport = async (eventId: string, pdfDataUrl: string) => {
