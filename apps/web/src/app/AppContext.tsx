@@ -238,45 +238,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // 7. Events
       const eventsData = await databaseService.fetchEvents();
-      if (eventsData.length > 0) {
-        setEvents(eventsData.map(e => ({
-          id: e.id,
-          name: e.title,
-          avenue: e.avenue,
-          date: e.start_date,
-          startTime: e.start_time || '10:00 AM',
-          endTime: '01:00 PM',
-          venue: e.venue,
-          about: e.description || '',
-          status: e.status === 'happened' ? 'happened' : e.status === 'Approved' ? 'approved' : 'pending_approval',
-          actualDate: e.start_date,
-          actualTime: e.start_time || '10:00 AM',
-          actualDurationHours: Number(e.actual_duration_hours || 2),
-          beneficiaries: Number(e.beneficiaries || 0),
-          nominatedMemberIds: (e.nominated_member_ids as any) || [],
-          posterUrl: e.cover_image || '',
-          formLink: '',
-          publicStatus: e.status === 'happened' ? 'Completed' : 'Upcoming',
-          isPublic: true,
-          likes: 0,
-          shares: 0
-        })));
-      }
+      setEvents(eventsData.map(e => ({
+        id: e.id,
+        name: e.title,
+        avenue: e.avenue,
+        date: e.start_date,
+        startTime: e.start_time || '10:00 AM',
+        endTime: '01:00 PM',
+        venue: e.venue,
+        about: e.description || '',
+        status: e.status === 'happened' ? 'happened' : e.status === 'Approved' ? 'approved' : 'pending_approval',
+        actualDate: e.start_date,
+        actualTime: e.start_time || '10:00 AM',
+        actualDurationHours: Number(e.actual_duration_hours || 2),
+        beneficiaries: Number(e.beneficiaries || 0),
+        nominatedMemberIds: (e.nominated_member_ids as any) || [],
+        posterUrl: e.cover_image || '',
+        formLink: '',
+        publicStatus: e.status === 'happened' ? 'Completed' : 'Upcoming',
+        isPublic: true,
+        likes: 0,
+        shares: 0
+      })));
 
       // 8. Transactions
       const txData = await databaseService.fetchTransactions();
-      if (txData.length > 0) {
-        setTransactions(txData.map(t => ({
-          id: t.id,
-          date: t.date,
-          description: t.description,
-          category: t.category,
-          type: t.type,
-          amount: Number(t.amount),
-          receipt: t.receipt_url || `RCP-${t.id.slice(0, 4)}`,
-          verifiedBy: t.verified_by
-        })));
-      }
+      setTransactions(txData.map(t => ({
+        id: t.id,
+        date: t.date,
+        description: t.description,
+        category: t.category,
+        type: t.type,
+        amount: Number(t.amount),
+        receipt: t.receipt_url || `RCP-${t.id.slice(0, 4)}`,
+        verifiedBy: t.verified_by
+      })));
     } catch (err) {
       console.error("Error loading data from Supabase:", err);
     }
@@ -421,7 +417,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteTransaction = async (txId: string) => {
-    await databaseService.deleteTransaction(txId);
+    // Optimistic local state removal
+    setTransactions(prev => prev.filter(t => t.id !== txId));
+    try {
+      await databaseService.deleteTransaction(txId);
+    } catch (err) {
+      console.warn("Could not delete transaction remotely:", err);
+    }
     loadDatabaseData();
   };
 
@@ -524,7 +526,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteEvent = async (eventId: string) => {
-    await databaseService.deleteEvent(eventId);
+    // Optimistic local state removal so UI updates immediately
+    setEvents(prev => prev.filter(e => e.id !== eventId));
+    try {
+      await databaseService.deleteEvent(eventId);
+    } catch (err) {
+      console.warn("Could not delete event remotely:", err);
+    }
     loadDatabaseData();
   };
 

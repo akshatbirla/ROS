@@ -281,7 +281,12 @@ export const databaseService = {
   },
 
   async deleteEvent(id: string): Promise<void> {
-    await supabase.from('events').delete().eq('id', id);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      await supabase.from('events').delete().eq('id', id);
+    } else {
+      await supabase.from('events').delete().eq('title', id);
+    }
   },
 
   // --- Meetings & MOM ---
