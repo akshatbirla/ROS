@@ -10,7 +10,7 @@ import { supabase } from './supabaseClient';
  */
 export async function uploadImageWithFallback(
   file: File,
-  bucket = 'rotaract_images'
+  bucket = 'club-assets'
 ): Promise<string> {
   const fileExt = file.name.split('.').pop() || 'jpg';
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
@@ -48,4 +48,3 @@ export async function uploadImageWithFallback(
     reader.readAsDataURL(file);
   });
 }
-
