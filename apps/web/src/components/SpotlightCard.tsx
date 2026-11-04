@@ -1,30 +1,28 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 export const SpotlightCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current || isFocused) return;
-    const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    const el = divRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    el.style.setProperty('--spotlight-x', `${x}px`);
+    el.style.setProperty('--spotlight-y', `${y}px`);
   };
 
   return (
     <div
       ref={divRef}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setOpacity(1)}
-      onMouseLeave={() => setOpacity(0)}
-      className={`relative overflow-hidden ${className}`}
+      className={`group relative overflow-hidden ${className}`}
     >
       <div
-        className="pointer-events-none absolute -inset-px transition-opacity duration-300"
+        className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
-          opacity,
-          background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(247, 168, 27, 0.15), transparent 40%)`,
+          background: `radial-gradient(350px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), rgba(247, 168, 27, 0.12), transparent 45%)`,
         }}
       />
       {children}

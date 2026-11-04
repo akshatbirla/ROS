@@ -14,27 +14,30 @@
   }
 }
 
-/* Custom Glassmorphism Utilities */
+/* Custom Glassmorphism Utilities - optimized for GPU hardware acceleration */
 .glass-panel {
-  background: rgba(14, 19, 31, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(14, 19, 31, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.35);
+  transform: translateZ(0);
 }
 
 .glass-panel-gold {
-  background: rgba(247, 168, 27, 0.04);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(247, 168, 27, 0.2);
-  box-shadow: 0 0 25px rgba(247, 168, 27, 0.08);
+  background: rgba(247, 168, 27, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(247, 168, 27, 0.25);
+  box-shadow: 0 0 20px rgba(247, 168, 27, 0.08);
+  transform: translateZ(0);
 }
 
 .glass-panel-cranberry {
-  background: rgba(212, 27, 44, 0.04);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 27, 44, 0.2);
-  box-shadow: 0 0 25px rgba(212, 27, 44, 0.08);
+  background: rgba(212, 27, 44, 0.06);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 27, 44, 0.25);
+  box-shadow: 0 0 20px rgba(212, 27, 44, 0.08);
+  transform: translateZ(0);
 }
 
 .gold-gradient-text {

@@ -215,12 +215,20 @@ export const RotaryWheel3D: React.FC<RotaryWheel3DProps> = ({
     window.addEventListener('touchmove', onTouchMove);
     window.addEventListener('touchend', onTouchEnd);
 
-    // 6. Animation Loop
+    // 6. Animation Loop (throttled & pauses when tab is hidden or element is offscreen)
     let animationFrameId: number;
     let baseTime = 0;
+    let isVisible = true;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.05 });
+    observer.observe(mount);
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      if (!isVisible || document.hidden) return;
+
       baseTime += 0.01;
 
       // When dragging with mouse, ONLY the central wheel auto-rotation pauses.
@@ -258,6 +266,7 @@ export const RotaryWheel3D: React.FC<RotaryWheel3DProps> = ({
     window.addEventListener('resize', handleResize);
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
       mount.removeEventListener('mousedown', onMouseDown);

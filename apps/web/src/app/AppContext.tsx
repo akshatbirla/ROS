@@ -550,16 +550,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMonthlyReports(prev => [...prev.filter(r => r.monthKey !== monthKey), report]);
   };
 
+  const contextValue = React.useMemo(() => ({
+    activeMembers, pendingCandidates, addedMemberKeys, isSyncing, addMember, removeMember, deleteCandidate, fetchLiveGoogleSheet,
+    transactions, addTransaction, deleteTransaction,
+    appSettings, updateSettings,
+    events, addEvent, updateEvent, deleteEvent,
+    eventReports, monthlyReports, uploadEventReport, uploadMonthlyReport,
+  }), [
+    activeMembers, pendingCandidates, addedMemberKeys, isSyncing,
+    transactions, appSettings, events, eventReports, monthlyReports
+  ]);
+
   return (
-    <AppContext.Provider
-      value={{
-        activeMembers, pendingCandidates, addedMemberKeys, isSyncing, addMember, removeMember, deleteCandidate, fetchLiveGoogleSheet,
-        transactions, addTransaction, deleteTransaction,
-        appSettings, updateSettings,
-        events, addEvent, updateEvent, deleteEvent,
-        eventReports, monthlyReports, uploadEventReport, uploadMonthlyReport,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );

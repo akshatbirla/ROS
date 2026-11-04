@@ -27,16 +27,16 @@ export const DepthCarousel: React.FC<DepthCarouselProps> = ({ images, autoplayIn
     
     // We only show a limited number of items to create depth (e.g., 3 items)
     if (diff === 0) {
-      return { zIndex: 3, scale: 1, x: 0, opacity: 1, filter: 'blur(0px)' }; // Active
+      return { zIndex: 3, scale: 1, x: 0, opacity: 1 }; // Active
     }
     if (diff === 1 || diff === -(total - 1)) {
-      return { zIndex: 2, scale: 0.85, x: '20%', opacity: 0.6, filter: 'blur(4px)' }; // Right
+      return { zIndex: 2, scale: 0.88, x: '20%', opacity: 0.5 }; // Right
     }
     if (diff === total - 1 || diff === -1) {
-      return { zIndex: 2, scale: 0.85, x: '-20%', opacity: 0.6, filter: 'blur(4px)' }; // Left
+      return { zIndex: 2, scale: 0.88, x: '-20%', opacity: 0.5 }; // Left
     }
     // Hidden items
-    return { zIndex: 1, scale: 0.7, x: 0, opacity: 0, filter: 'blur(8px)' };
+    return { zIndex: 1, scale: 0.7, x: 0, opacity: 0 };
   };
 
   return (
@@ -52,8 +52,7 @@ export const DepthCarousel: React.FC<DepthCarouselProps> = ({ images, autoplayIn
                 zIndex: style.zIndex,
                 scale: style.scale,
                 x: style.x,
-                opacity: style.opacity,
-                filter: style.filter
+                opacity: style.opacity
               }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
               className="absolute w-[70%] h-[80%] rounded-2xl overflow-hidden shadow-2xl border border-white/10 cursor-pointer"
